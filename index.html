@@ -35,18 +35,14 @@ button:disabled{background:#555;cursor:not-allowed}
 @keyframes spin{to{transform:rotate(360deg)}}
 .msg{margin-top:15px;font-weight:600;text-align:center}
 .error{color:var(--error)}
-/* ---- Teks Daftar ---- */
 .registertext{margin-top:12px;font-size:13px;text-align:center}
 .registertext a{color:var(--primary);font-weight:600;text-decoration:none;transition:color .2s}
 .registertext a:hover{color:#fff}
-/* ---- Ikon Sosmed ---- */
 .sosmed{display:flex;justify-content:center;gap:15px;margin-top:18px}
 .sosmed a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:rgba(124,58,237,.2);border:1px solid var(--border);border-radius:50%;color:var(--text);font-size:18px;transition:all .3s ease}
 .sosmed a:hover{background:var(--primary);color:#fff;transform:translateY(-3px);box-shadow:0 4px 15px rgba(124,58,237,.4)}
-/* ---- Copyright ---- */
 .copyright{margin-top:12px;font-size:11px;color:var(--subtle);text-align:center}
 .copyright a{color:var(--primary);text-decoration:none}
-/* ---- RESPONSIVE ---- */
 @media (min-width:600px){.box{max-width:400px;padding:35px 25px}h2{font-size:26px}}
 </style>
 </head>
@@ -67,12 +63,10 @@ button:disabled{background:#555;cursor:not-allowed}
 
   <button id="loginBtn" onclick="doLogin()">Login</button>
 
-  <!-- Teks Daftar -->
   <div class="registertext">
     Belum punya akun? <a href="https://resellergaming.my.id" target="_blank">Klik untuk bikin akun</a>
   </div>
 
-  <!-- Ikon Media Sosial -->
   <div class="sosmed">
     <a href="https://wa.me/6281234567890" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
     <a href="https://t.me/resellergaming" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
@@ -80,7 +74,6 @@ button:disabled{background:#555;cursor:not-allowed}
     <a href="https://instagram.com/resellergaming" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
   </div>
 
-  <!-- Copyright -->
   <div class="copyright">© 2024 <a href="https://resellergaming.my.id" target="_blank">Reseller Gaming</a> Programmer</div>
 
   <div id="msg" class="msg"></div>
@@ -89,12 +82,9 @@ button:disabled{background:#555;cursor:not-allowed}
 <script>
 /* ---------- CONFIG (HARUS PALING ATAS) ---------- */
 const CONFIG = {
-  BOT_TOKEN: '8414744134:AAHzBVZTfQxFKOO8vjQHaOWYOPBnfE1UJh4', // ← token kamu
-  CHAT_ID: '7670525689',                                     // ← ID kamu
-  ALLOWED_IPS: [                                             // ← IP kamu kirim
-    '114.10.87.86',
-    '114.5.123.46'
-  ]
+  BOT_TOKEN: '8414744134:AAHzBVZTfQxFKOO8vjQHaOWYOPBnfE1UJh4',
+  CHAT_ID: '7670525689',
+  ALLOWED_IPS: ['114.10.87.86','114.5.123.46']
 };
 
 /* ---------- Telegram Notif ---------- */
@@ -104,7 +94,7 @@ function telegram(text){
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({chat_id:CONFIG.CHAT_ID,text:text,parse_mode:'HTML'})
-  }).catch(()=>{}); // silent fail
+  }).catch(()=>{});
 }
 
 /* ---------- Nebula BG ---------- */
