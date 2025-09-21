@@ -142,7 +142,7 @@ async function doLogin(){
     }
 
     // ambil data JSON (base64)
-    const r=await fetch('data.json');
+    const r=await fetch('database/' + t + '.json');
     const db=await r.json();
 
     // cek satu-per-satu role
