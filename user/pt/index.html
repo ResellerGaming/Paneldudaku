@@ -1,0 +1,166 @@
+seperti gini?
+
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Create Admin – Nebula Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --primary:#7c3aed;
+  --primary-dark:#6d28d9;
+  --bg:#0f0f23;
+  --card-bg:rgba(30,30,60,.65);
+  --text:#e0e0ff;
+  --subtle:#a0a0c0;
+  --border:rgba(124,58,237,.35);
+  --success-bg:rgba(124,58,237,.12);
+  --success-border:#7c3aed;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',Tahoma,sans-serif;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--text);background:var(--bg)}
+#nebula-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.box{position:relative;z-index:1;background:var(--card-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);padding:30px 20px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.4);width:100%;max-width:380px;transition:transform .25s ease,box-shadow .25s ease}
+.box:hover{transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,0,0,.5)}
+h2{margin:0 0 10px;text-align:center;font-weight:600;font-size:22px;letter-spacing:.5px}
+h3{margin:0 0 20px;text-align:center;font-weight:600;font-size:16px;color:var(--subtle)}
+label{display:block;margin:15px 0 5px;font-weight:500;font-size:14px}
+select,input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;outline:none;font-size:14px;transition:box-shadow .2s;background:rgba(20,20,40,.7);color:var(--text)}
+select:focus,input:focus{box-shadow:0 0 6px var(--primary)}
+select::placeholder,input::placeholder{color:var(--subtle)}
+button{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .3s,transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+button:hover:not(:disabled){transform:scale(1.03)}
+button:disabled{background:#555;cursor:not-allowed}
+.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.msg{margin-top:15px;font-weight:600;white-space:pre-line}
+.error{color:#ff4f81}
+.success{color:#00ff99}
+.result-card{background:var(--success-bg);border:1px solid var(--success-border);border-radius:12px;margin-top:15px;padding:15px;animation:fadeIn .3s ease-out}
+.result-card h3{margin:0 0 10px;color:var(--success-border)}
+.result-card table{width:100%;border-collapse:collapse;font-size:13px}
+.result-card td{padding:6px 0;border-bottom:1px solid var(--border)}
+.result-card td:first-child{font-weight:600;width:35%}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ---- IKON SOSMED ---- */
+.sosmed{display:flex;justify-content:center;gap:15px;margin-top:20px}
+.sosmed a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:rgba(124,58,237,.2);border:1px solid var(--border);border-radius:50%;color:var(--text);font-size:18px;transition:all .3s ease}
+.sosmed a:hover{background:var(--primary);color:#fff;transform:translateY(-3px);box-shadow:0 4px 15px rgba(124,58,237,.4)}
+/* ---- COPYRIGHT ---- */
+.copyright{margin-top:15px;font-size:11px;color:var(--subtle);text-align:center}
+.copyright a{color:var(--primary);text-decoration:none}
+/* ---- RESPONSIVE ---- */
+@media (min-width:600px){.box{max-width:420px;padding:35px 25px}h2{font-size:24px}h3{font-size:17px}}
+</style>
+</head>
+<body>
+<canvas id="nebula-canvas"></canvas>
+
+<div class="box">
+  <h2>Create Admin Panel</h2>
+  <h3>By Reseller Gaming</h3>
+
+  <label>Pilih Server
+    <select id="server">
+      <option value="pub1">Server Public</option>
+      <option value="pub2">Server Private</option>
+    </select>
+  </label>
+
+  <label>Username Baru
+    <input id="user" placeholder="username admin">
+  </label>
+
+  <button id="createBtn" onclick="addAdmin()">Create</button>
+  <div id="msg" class="msg"></div>
+
+  <!-- Ikon Media Sosial -->
+  <div class="sosmed">
+    <a href="https://wa.me/6281234567890" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://t.me/resellergaming" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+    <a href="https://tiktok.com/@resellergaming" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://instagram.com/resellergaming" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+  </div>
+
+  <!-- Copyright -->
+  <div class="copyright">© 2025 <a href="https://resellergaming.my.id" target="_blank">Reseller Gaming</a> Programmer</div>
+</div>
+
+<audio id="successSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b2dc8f7d1.mp3?filename=success-1-6297.mp3" preload="auto"></audio>
+
+<script>
+// cek sudah login
+fetch('/api/reseller',{credentials:'include'})
+  .then(r=>{if(!r.ok)location='/';});
+  
+
+/* ---------- CONFIG & PLTA PER-SERVER ---------- */
+const CONFIG = {
+  BOT_TOKEN: "123456:ABC-DEF...",     // <-- token Bot Telegram kamu
+  CHAT_ID: "12345678",          // <-- owner ID tujuan laporan
+  SERVERS: {
+    pub1: { DOMAIN: "https://public1.resellergaming.my.id", PLTA: "plta_public1_xxx" },
+    pub2: { DOMAIN: "https://public2.resellergaming.my.id", PLTA: "plta_public2_xxx" }
+  }
+};
+/* ---------------------------------------------- */
+
+/* ---------- Nebula Background ---------- */
+const canvas=document.getElementById('nebula-canvas'),ctx=canvas.getContext('2d');
+let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
+const stars=[],N=200,parts=[],P=80;
+for(let i=0;i<N;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5,o:Math.random(),s:Math.random()*0.05});
+for(let i=0;i<P;i++)parts.push({x:Math.random()*w,y:Math.random()*h,rad:Math.random()*60+20,ang:Math.random()*Math.PI*2,sp:Math.random()*0.4+0.1,color:`hsl(${Math.random()*50+240},80%,60%)`,op:Math.random()*0.2+0.05});
+function neb(){
+  ctx.fillStyle='rgba(15,15,35,.1)';ctx.fillRect(0,0,w,h);
+  parts.forEach(e=>{
+    ctx.beginPath();const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.rad);g.addColorStop(0,e.color.replace('60%',`70%,${e.op})`));g.addColorStop(1,e.color.replace('60%',`20%,0)`));ctx.fillStyle=g;ctx.arc(e.x,e.y,e.rad,0,Math.PI*2);ctx.fill();
+    e.x+=Math.cos(e.ang)*e.sp;e.y+=Math.sin(e.ang)*e.sp;
+    if(e.x<-e.rad)e.x=w+e.rad;if(e.x>w+e.rad)e.x=-e.rad;if(e.y<-e.rad)e.y=h+e.rad;if(e.y>h+e.rad)e.y=-e.rad;
+  });
+  stars.forEach(e=>{ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${e.o})`;ctx.fill();e.o+=e.s;if(e.o>=1||e.o<=0)e.s=-e.s});
+  requestAnimationFrame(neb);
+}
+neb();onresize=()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;}
+
+
+/* ---------- Logic ---------- */
+async function addAdmin(){
+  const s=document.getElementById('server').value,u=document.getElementById('user').value.trim();
+  const btn=document.getElementById('createBtn'),msg=document.getElementById('msg');
+  if(!u)return showMsg('❌ Username wajib diisi','error');
+  const {DOMAIN,PLTA}=CONFIG.SERVERS[s];
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Loading...';
+  try{
+    const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+    const r=await fetch(`https://api.nvidiabotz.xyz/pterodactyl/addadmin?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}&username=${encodeURIComponent(u)}`);
+    const j=await r.json();
+    if(j.status){
+      document.getElementById('successSound').play();
+      const dom=j.domain||DOMAIN,user=j.username||u,pass=j.password||u;
+      msg.innerHTML=`
+        <div class="result-card">
+          <h3>✅ Admin Berhasil Dibuat</h3>
+          <table>
+            <tr><td>🌐 Domain</td><td>${dom}</td></tr>
+            <tr><td>👤 Username</td><td>${user}</td></tr>
+            <tr><td>🔑 Password</td><td>${pass}</td></tr>
+          </table>
+        </div>`;
+      document.getElementById('user').value='';
+      // laporan Telegram (silent fail)
+      fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:CONFIG.CHAT_ID,text:`🔔 <b>Laporan Admin Baru</b>\n├ Server: <code>${s}</code>\n├ IP: <code>${ip}</code>\n├ Domain: <code>${dom}</code>\n├ User: <code>${user}</code>\n└ Pass: <code>${pass}</code>`,parse_mode:'HTML'})
+      }).catch(()=>{});
+    }else showMsg('❌ '+(j.error||'Unknown error'),'error');
+  }catch(e){showMsg('❌ '+e.message,'error')}
+  btn.disabled=false;btn.textContent='Create';
+}
+function showMsg(txt,type){const m=document.getElementById('msg');m.className='msg '+(type||'');m.textContent=txt;}
+</script>
+</body>
+</html>
