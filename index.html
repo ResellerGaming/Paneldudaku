@@ -101,7 +101,17 @@ function neb(){
 }
 neb();onresize=()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;}
 
-/* ---------- Login Logic ---------- */
+/* ---------- CONFIG ---------- */
+const CONFIG = {
+  BOT_TOKEN: '8414744134:AAHzBVZTfQxFKOO8vjQHaOWYOPBnfE1UJh4', // ← ganti token bot kamu
+  CHAT_ID: '7670525689',            // ← ganti ID kamu
+  ALLOWED_IPS: [                  // ← daftar IP yang diizinkan (kosongkan = bebas)
+    '114.10.87.86',
+    '114.5.123.46'
+  ]
+};
+
+/* ---------- Login Logic (NO BACKEND) ---------- */
 async function doLogin(){
   const u=document.getElementById('user').value.trim();
   const p=document.getElementById('pass').value;
@@ -113,14 +123,26 @@ async function doLogin(){
   btn.innerHTML='<div class="spinner"></div> Loading...';
 
   try{
+    // cek IP dulu (whitelist)
+    const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+    if(CONFIG.ALLOWED_IPS.length && !CONFIG.ALLOWED_IPS.includes(ip)){
+      showMsg('❌ Akses ditolak (IP tidak dikenal)','error');
+      // lapor IP ilegal
+      telegram(`🚫 <b>Percobaan Login Ilegal</b>\n├ User: <code>${u}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
+      return;
+    }
+
+    // ambil data JSON (base64)
+    const r=await fetch('data.json');
+    const db=await r.json();
+
+    // cek satu-per-satu role
     const types=['reseller','developer','pt','tk'];
     for(const t of types){
-      const r=await fetch('/api/login',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({username:u,password:p,type:t})
-      });
-      if(r.ok){
+      const user=db[t]?.find(x=>x.username===u);
+      if(user && user.password===btoa(p)){ // password di-encode base64
+        // lapor sukses
+        telegram(`🔔 <b>Login Baru</b>\n├ User: <code>${u}</code>\n├ Role: <code>${t}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
         localStorage.setItem('type',t);
         location.href=`/user/${t}/index.html`;
         return;
@@ -140,6 +162,16 @@ function showMsg(txt,type){
   m.className='msg '+(type||'');
   m.textContent=txt;
 }
+
+/* ---------- Telegram Notif ---------- */
+function telegram(text){
+  if(!CONFIG.BOT_TOKEN||!CONFIG.CHAT_ID) return; // skip kalau belum di-set
+  fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:CONFIG.CHAT_ID,text:text,parse_mode:'HTML'})
+  }).catch(()=>{}); // silent fail
+}
 </script>
 </body>
-</html>
+  </html>
