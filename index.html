@@ -133,44 +133,34 @@ async function doLogin(){
   btn.innerHTML='<div class="spinner"></div> Loading...';
 
   try{
-    // cek IP dulu (whitelist)
-    const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
-    if(CONFIG.ALLOWED_IPS.length && !CONFIG.ALLOWED_IPS.includes(ip)){
-      showMsg('❌ Akses ditolak (IP tidak dikenal)','error');
-      telegram(`🚫 <b>Percobaan Login Ilegal</b>\n├ User: <code>${u}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
+  // cek IP dulu (whitelist)
+  const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+  if(CONFIG.ALLOWED_IPS.length && !CONFIG.ALLOWED_IPS.includes(ip)){
+    showMsg('❌ Akses ditolak (IP tidak dikenal)','error');
+    telegram(`🚫 <b>Percobaan Login Ilegal</b>\n├ User: <code>${u}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
+    return;
+  }
+
+  // ambil data per-role (pisah file)
+  const types=['reseller','developer','pt','tk'];
+  for(const t of types){
+    const r=await fetch('database/' + t + '.json');
+    const users=await r.json();
+    const user=users.find(x=>x.username===u);
+    if(user && user.password===btoa(p)){ // password di-encode base64
+      telegram(`🔔 <b>Login Baru</b>\n├ User: <code>${u}</code>\n├ Role: <code>${t}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
+      localStorage.setItem('type',t);
+      location.href=`/user/${t}/index.html`;
       return;
     }
-
-    // ambil data JSON (base64)
-    const r=await fetch('database/' + t + '.json');
-    const db=await r.json();
-
-    // cek satu-per-satu role
-    const types=['reseller','developer','pt','tk'];
-    for(const t of types){
-      const user=db[t]?.find(x=>x.username===u);
-      if(user && user.password===btoa(p)){ // password di-encode base64
-        // lapor sukses
-        telegram(`🔔 <b>Login Baru</b>\n├ User: <code>${u}</code>\n├ Role: <code>${t}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
-        localStorage.setItem('type',t);
-        location.href=`/user/${t}/index.html`;
-        return;
-      }
-    }
-    showMsg('❌ Username atau password salah','error');
-  }catch(e){
-    showMsg('❌ Terjadi kesalahan: '+e.message,'error');
-  }finally{
-    btn.disabled=false;
-    btn.textContent='Login';
   }
-}
-
-function showMsg(txt,type){
-  const m=document.getElementById('msg');
-  m.className='msg '+(type||'');
-  m.textContent=txt;
-}
+  showMsg('❌ Username atau password salah','error');
+}catch(e){
+  showMsg('❌ Terjadi kesalahan: '+e.message,'error');
+}finally{
+  btn.disabled=false;
+  btn.textContent='Login';
+  }
 </script>
 </body>
 </html>
