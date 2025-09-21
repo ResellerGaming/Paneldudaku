@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nebula Panel | Reseller Gaming</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --bg: #0f0f23;
+      --card-bg: rgba(30, 30, 60, 0.6);
+      --text: #e0e0ff;
+      --subtle: #a0a0c0;
+      --border: rgba(124, 58, 237, 0.3);
+      --success-bg: rgba(124, 58, 237, 0.1);
+      --success-border: #7c3aed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    /* Nebula Background */
+    #nebula-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 30px 20px;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .logo-container {
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: var(--text);
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    }
+
+    p.sub {
+      margin: 0 0 20px;
+      color: var(--subtle);
+      font-size: 13px;
+    }
+
+    label {
+      text-align: left;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: rgba(20, 20, 40, 0.7);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+    }
+
+    .server-table-container {
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+
+    .server-table {
+      width: 100%;
+      min-width: 300px;
+      border-collapse: collapse;
+      background: rgba(20, 20, 40, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .server-table th, .server-table td {
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .server-table th {
+      background: rgba(124, 58, 237, 0.2);
+      font-weight: 600;
+    }
+
+    .server-table tr {
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .server-table tr:hover {
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    .server-table tr.selected {
+      background: rgba(124, 58, 237, 0.25);
+      font-weight: 600;
+    }
+
+    .server-status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .status-online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+    .status-offline { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+    .status-maintenance { background: #f59e0b; box-shadow: 0 0 5px #f59e0b; }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .social-icons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(124, 58, 237, 0.2);
+      border-radius: 50%;
+      color: var(--text);
+      font-size: 18px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: 1px solid var(--border);
+    }
+
+    .social-icons a:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .copyright {
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--subtle);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .copyright a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .success-box {
+      text-align: left;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .success-box b {
+      color: var(--text);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 768px) {
+      .card {
+        max-width: 600px;
+        padding: 40px 30px;
+      }
+
+      .logo {
+        width: 70px;
+        height: 70px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      p.sub {
+        font-size: 14px;
+        margin-bottom: 25px;
+      }
+
+      label {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      input, select {
+        padding: 14px;
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 14px;
+        font-size: 16px;
+      }
+
+      .server-table th, .server-table td {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .social-icons {
+        gap: 20px;
+      }
+
+      .social-icons a {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+      }
+
+      .copyright {
+        font-size: 12px;
+      }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 1024px) {
+      .card {
+        max-width: 420px;
+        padding: 40px 30px;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+
+      .server-table-container {
+        overflow-x: visible;
+      }
+
+      .server-table {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="nebula-canvas"></canvas>
+
+  <div class="card">
+    <div class="logo-container">
+      <!-- Ganti dengan logo.jpg atau profile.jpg -->
+      <img src="logo.jpg" alt="Logo" class="logo">
+    </div>
+    <h2>Buat Panel Baru</h2>
+    <p class="sub">Isi username & pilih paket RAM</p>
+
+    <div id="step1">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Masukkan username">
+
+      <label>Paket RAM</label>
+      <select id="paket">
+        <option value="">-- Pilih Paket --</option>
+        <option value="1gb">1GB</option>
+        <option value="2gb">2GB</option>
+        <option value="3gb">3GB</option>
+        <option value="4gb">4GB</option>
+        <option value="5gb">5GB</option>
+        <option value="6gb">6GB</option>
+        <option value="7gb">7GB</option>
+        <option value="8gb">8GB</option>
+        <option value="9gb">9GB</option>
+        <option value="10gb">10GB</option>
+        <option value="unli">Unlimited</option>
+      </select>
+
+      <label>Pilih Server</label>
+      <div class="server-table-container">
+        <table class="server-table">
+          <thead>
+            <tr>
+              <th>Server</th>
+              <th>Status</th>
+              <th>Panel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-server="public1" data-domain="https://public1.resellergaming.my.id" data-plta="plta_public1">
+              <td><span class="server-status status-online"></span>Public V1</td>
+              <td>Online</td>
+              <td>Pterodactyl</td>
+            </tr>
+            <tr data-server="public2" data-domain="https://public2.resellergaming.my.id" data-plta="plta_public2">
+              <td><span class="server-status status-online"></span>Public V2</td>
+              <td>Online</td>
+              <td>Pterodactyl</td>
+            </tr>
+            <tr data-server="private1" data-domain="https://private1.resellergaming.my.id" data-plta="plta_private1">
+              <td><span class="server-status status-maintenance"></span>Private V1</td>
+              <td>Maintenance</td>
+              <td>Pterodactyl</td>
+            </tr>
+            <tr data-server="private2" data-domain="https://private2.resellergaming.my.id" data-plta="plta_private2">
+              <td><span class="server-status status-offline"></span>Private V2</td>
+              <td>Offline</td>
+              <td>Pterodactyl</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button onclick="buatPanel()" id="btnBuat">
+        <span id="btnText">Buat Panel</span>
+      </button>
+
+      <div class="social-icons">
+        <a href="https://wa.me/6281234567890" target="_blank" title="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://t.me/resellergaming" target="_blank" title="Telegram">
+          <i class="fab fa-telegram-plane"></i>
+        </a>
+        <a href="https://tiktok.com/@resellergaming" target="_blank" title="TikTok">
+          <i class="fab fa-tiktok"></i>
+        </a>
+        <a href="https://instagram.com/resellergaming" target="_blank" title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+
+      <div class="copyright">
+        &copy; 2025 <a href="https://resellergaming.my.id" target="_blank">Reseller Gaming</a> - Programmer
+      </div>
+    </div>
+
+    <div id="step2" class="hidden">
+      <div class="success-box">
+        <b>Email:</b> <span id="email"></span><br>
+        <b>Username:</b> <span id="uname"></span><br>
+        <b>Password:</b> <span id="pass"></span><br>
+        <b>Link:</b> <a id="panelLink" href="#" target="_blank" style="color:#7c3aed;">Buka Panel</a><br>
+        <b>Paket:</b> <span id="ram"></span><br>
+        <b>Server:</b> <span id="server"></span>
+      </div>
+      <button onclick="resetForm()">Buat Panel Lagi</button>
+    </div>
+  </div>
+
+  <script>
+  // cek sudah login
+fetch('/api/reseller',{credentials:'include'})
+  .then(r=>{if(!r.ok)location='/';});
+  
+  
+    // Nebula Background Animation
+    const canvas = document.getElementById('nebula-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    
+    const stars = [];
+    const starCount = 200;
+    const nebulaParticles = [];
+    const particleCount = 100;
+    
+    // Create stars
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2,
+        opacity: Math.random(),
+        speed: Math.random() * 0.05
+      });
+    }
+    
+    // Create nebula particles
+    for (let i = 0; i < particleCount; i++) {
+      nebulaParticles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 50 + 20,
+        color: `hsl(${Math.random() * 60 + 240}, 70%, 50%)`,
+        speed: Math.random() * 0.5 + 0.1,
+        angle: Math.random() * Math.PI * 2,
+        opacity: Math.random() * 0.3 + 0.1
+      });
+    }
+    
+    function animate() {
+      // Clear canvas
+      ctx.fillStyle = 'rgba(15, 15, 35, 0.1)';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw and update nebula particles
+      nebulaParticles.forEach(particle => {
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.radius
+        );
+        gradient.addColorStop(0, particle.color.replace('50%', '60%').replace(')', `, ${particle.opacity})`));
+        gradient.addColorStop(1, particle.color.replace('50%', '30%').replace(')', ', 0)'));
+        
+        ctx.fillStyle = gradient;
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Update position
+        particle.x += Math.cos(particle.angle) * particle.speed;
+        particle.y += Math.sin(particle.angle) * particle.speed;
+        
+        // Wrap around screen
+        if (particle.x < -particle.radius) particle.x = width + particle.radius;
+        if (particle.x > width + particle.radius) particle.x = -particle.radius;
+        if (particle.y < -particle.radius) particle.y = height + particle.radius;
+        if (particle.y > height + particle.radius) particle.y = -particle.radius;
+      });
+      
+      // Draw and update stars
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+        
+        // Twinkle effect
+        star.opacity += star.speed;
+        if (star.opacity >= 1 || star.opacity <= 0) {
+          star.speed = -star.speed;
+        }
+      });
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+    
+    // Existing JavaScript code
+    const hargaPaket = {
+      "1gb": { ram: 1000, disk: 1000, cpu: 40 },
+      "2gb": { ram: 2000, disk: 1000, cpu: 60 },
+      "3gb": { ram: 3000, disk: 2000, cpu: 80 },
+      "4gb": { ram: 4000, disk: 2000, cpu: 100 },
+      "5gb": { ram: 5000, disk: 3000, cpu: 120 },
+      "6gb": { ram: 6000, disk: 3000, cpu: 140 },
+      "7gb": { ram: 7000, disk: 4000, cpu: 160 },
+      "8gb": { ram: 8000, disk: 4000, cpu: 180 },
+      "9gb": { ram: 9000, disk: 5000, cpu: 200 },
+      "10gb": { ram: 10000, disk: 5000, cpu: 220 },
+      "unli": { ram: 0, disk: 0, cpu: 0 }
+    };
+
+    let selectedServer = null;
+    let selectedDomain = null;
+    let selectedPlta = null;
+
+    // Handle server selection
+    document.querySelectorAll('.server-table tr[data-server]').forEach(row => {
+      row.addEventListener('click', function() {
+        // Remove previous selection
+        document.querySelectorAll('.server-table tr').forEach(r => r.classList.remove('selected'));
+        
+        // Add selection to clicked row
+        this.classList.add('selected');
+        
+        // Store selected server, domain and plta
+        selectedServer = this.dataset.server;
+        selectedDomain = this.dataset.domain;
+        selectedPlta = this.dataset.plta;
+      });
+    });
+
+    async function buatPanel() {
+      const username = document.getElementById('username').value.trim();
+      const paket = document.getElementById('paket').value;
+
+      if (!username || !paket) return alert('Username dan paket wajib diisi!');
+      if (!selectedServer) return alert('Silakan pilih server terlebih dahulu!');
+
+      // Check if server is online
+      const selectedRow = document.querySelector(`tr[data-server="${selectedServer}"]`);
+      const statusText = selectedRow.querySelector('td:nth-child(2)').textContent;
+      
+      if (statusText === 'Offline' || statusText === 'Maintenance') {
+        return alert(`Server ${selectedServer.toUpperCase()} sedang ${statusText.toLowerCase()}. Silakan pilih server lain.`);
+      }
+
+      const conf = hargaPaket[paket];
+
+      // Show loading state
+      const btnText = document.getElementById('btnText');
+      btnText.innerHTML = '<span class="loading"></span>';
+      document.getElementById('btnBuat').disabled = true;
+
+      try {
+        const res = await fetch(`${selectedDomain}/pterodactyl/addpanel?domain=${selectedDomain}&plta=${selectedPlta}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
+        const data = await res.json();
+
+        if (data && data.user) {
+          document.getElementById('step1').classList.add('hidden');
+          document.getElementById('step2').classList.remove('hidden');
+
+          document.getElementById('email').innerText = data.user.attributes.email;
+          document.getElementById('uname').innerText = data.user.attributes.username;
+          document.getElementById('pass').innerText = data.user.attributes.username;
+          document.getElementById('panelLink').href = selectedDomain;
+          document.getElementById('ram').innerText = paket.toUpperCase();
+          document.getElementById('server').innerText = selectedServer.toUpperCase();
+        } else {
+          alert('Gagal membuat panel. Coba lagi.');
+          resetButtonState();
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+        resetButtonState();
+      }
+    }
+
+    function resetButtonState() {
+      const btnText = document.getElementById('btnText');
+      btnText.textContent = 'Buat Panel';
+      document.getElementById('btnBuat').disabled = false;
+    }
+
+    function resetForm() {
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('paket').value = '';
+      
+      // Clear server selection
+      document.querySelectorAll('.server-table tr').forEach(r => r.classList.remove('selected'));
+      selectedServer = null;
+      selectedDomain = null;
+      selectedPlta = null;
+      
+      resetButtonState();
+    }
+  </script>
+</body>
+</html>
