@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nebula Panel | Reseller Gaming</title>
   <script>
-‎    if(localStorage.getItem('type') !== 'reseller') location='/';
+‎    /* ---------- Cek IP (ganti mental) ---------- */
+const allowedIPs = await fetch('database/allowed_ips.json').then(r=>r.json()).catch(()=>[]);
+const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+
+if(!allowedIPs.includes(ip)){
+  telegram(`🚫 <b>Akses Diblokir</b>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
+  location='/'; // kembali ke login
+  return;
+}
 ‎  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -465,11 +473,6 @@
   </div>
 
   <script>
-  // cek sudah login
-fetch('/api/reseller',{credentials:'include'})
-  .then(r=>{if(!r.ok)location='/';});
-  
-  
     // Nebula Background Animation
     const canvas = document.getElementById('nebula-canvas');
     const ctx = canvas.getContext('2d');
