@@ -414,7 +414,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr data-server="public1" data-domain="https://public1.resellergaming.my.id" data-plta="plta_public1">
+            <tr data-server="public1" data-domain="https://rafi.panelwota.my.id" data-plta="ptla_8ALahDHOP0OFnY5Ih0zOz1YmrE2EivvNWolLThuu0zg">
               <td><span class="server-status status-online"></span>Public V1</td>
               <td>Online</td>
               <td>Pterodactyl</td>
@@ -625,7 +625,7 @@
       document.getElementById('btnBuat').disabled = true;
 
       try {
-        const res = await fetch(`${selectedDomain}/pterodactyl/addpanel?domain=${selectedDomain}&plta=${selectedPlta}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
+        const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${selectedDomain}&plta=${selectedPlta}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
         const data = await res.json();
 
         if (data && data.user) {
