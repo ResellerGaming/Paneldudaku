@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nebula Panel | Reseller Gaming</title>
   <script>
-‎    /* ---------- Cek IP (ganti mental) ---------- */
-const allowedIPs = await fetch('database/allowed_ips.json').then(r=>r.json()).catch(()=>[]);
-const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+  (async function(){
+    // 1. cek IP dulu (tanpa backend)
+    const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
+    const allowed=await fetch('/database/allowed_ips.json').then(r=>r.json()).catch(()=>[]);
+    if(!allowed.includes(ip)){ location='/'; return; }
 
-if(!allowedIPs.includes(ip)){
-  telegram(`🚫 <b>Akses Diblokir</b>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
-  location='/'; // kembali ke login
-  return;
-}
-‎  </script>
+    // 2. kalau IP izin, tapi belum login → kembali ke login
+    if(!localStorage.getItem('type')){ location='/'; return; }
+
+    // 3. kalau rolenya salah → kembali ke login
+    if(localStorage.getItem('type') !== 'reseller'){ location='/'; return; }
+  })();
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
