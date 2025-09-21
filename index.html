@@ -87,6 +87,26 @@ button:disabled{background:#555;cursor:not-allowed}
 </div>
 
 <script>
+/* ---------- CONFIG (HARUS PALING ATAS) ---------- */
+const CONFIG = {
+  BOT_TOKEN: '8414744134:AAHzBVZTfQxFKOO8vjQHaOWYOPBnfE1UJh4', // ganti token bot kamu
+  CHAT_ID: '7670525689',            // ganti ID kamu
+  ALLOWED_IPS: [                  // kosongkan array = bebas
+    '114.10.87.86',
+    '114.5.123.46'
+  ]
+};
+
+/* ---------- Telegram Notif ---------- */
+function telegram(text){
+  if(!CONFIG.BOT_TOKEN||!CONFIG.CHAT_ID) return; // skip kalau belum di-set
+  fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:CONFIG.CHAT_ID,text:text,parse_mode:'HTML'})
+  }).catch(()=>{}); // silent fail
+}
+
 /* ---------- Nebula BG ---------- */
 const canvas=document.getElementById('nebula-canvas'),ctx=canvas.getContext('2d');
 let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
@@ -100,16 +120,6 @@ function neb(){
   requestAnimationFrame(neb);
 }
 neb();onresize=()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;}
-
-/* ---------- CONFIG ---------- */
-const CONFIG = {
-  BOT_TOKEN: '8414744134:AAHzBVZTfQxFKOO8vjQHaOWYOPBnfE1UJh4', // ← ganti token bot kamu
-  CHAT_ID: '7670525689',            // ← ganti ID kamu
-  ALLOWED_IPS: [                  // ← daftar IP yang diizinkan (kosongkan = bebas)
-    '114.10.87.86',
-    '114.5.123.46'
-  ]
-};
 
 /* ---------- Login Logic (NO BACKEND) ---------- */
 async function doLogin(){
@@ -127,7 +137,6 @@ async function doLogin(){
     const ip=await fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip).catch(()=>'unknown');
     if(CONFIG.ALLOWED_IPS.length && !CONFIG.ALLOWED_IPS.includes(ip)){
       showMsg('❌ Akses ditolak (IP tidak dikenal)','error');
-      // lapor IP ilegal
       telegram(`🚫 <b>Percobaan Login Ilegal</b>\n├ User: <code>${u}</code>\n├ IP: <code>${ip}</code>\n└ Waktu: <code>${new Date().toLocaleString('id-ID')}</code>`);
       return;
     }
@@ -162,16 +171,6 @@ function showMsg(txt,type){
   m.className='msg '+(type||'');
   m.textContent=txt;
 }
-
-/* ---------- Telegram Notif ---------- */
-function telegram(text){
-  if(!CONFIG.BOT_TOKEN||!CONFIG.CHAT_ID) return; // skip kalau belum di-set
-  fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({chat_id:CONFIG.CHAT_ID,text:text,parse_mode:'HTML'})
-  }).catch(()=>{}); // silent fail
-}
 </script>
 </body>
-  </html>
+</html>
