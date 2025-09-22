@@ -638,6 +638,7 @@
           document.getElementById('panelLink').href = selectedDomain;
           document.getElementById('ram').innerText = paket.toUpperCase();
           document.getElementById('server').innerText = selectedServer.toUpperCase();
+          await kirimLaporanTelegram(username, paket, selectedServer);
         } else {
           alert('Gagal membuat panel. Coba lagi.');
           resetButtonState();
@@ -667,6 +668,35 @@
       selectedPlta = null;
       
       resetButtonState();
+    }
+    async function kirimLaporanTelegram(username, paket, server) {
+  const token = "8232512495:AAHQALGnAK0Ji1jXm-NhI-YOf9l5j5lYI10";
+  const chatId = "7670525689";
+  const ip = await fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => d.ip)
+    .catch(() => 'IP tidak diketahui');
+
+  const waktu = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
+  const pesan = `
+🚀 *Panel Baru Dibuat!*
+👤 Username: ${username}
+📦 Paket: ${paket.toUpperCase()}
+🖥️ Server: ${server.toUpperCase()}
+🕒 Waktu: ${waktu}
+🌐 IP: ${ip}
+  `.trim();
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: pesan,
+      parse_mode: "Markdown"
+    })
+  });
     }
   </script>
 </body>
